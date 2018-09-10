@@ -1,6 +1,6 @@
 {
   "name": "shellfish",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Node.js project packaging tool for CI/CD practices.",
   "main": "index.js",
   "scripts": {
