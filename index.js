@@ -21,14 +21,14 @@ const shellfishSpawn = (cmd, args = [], cwd = process.cwd(), options = {}) => {
         }
         let cproc = spawn(cmd, args, { cwd: cwd, shell: process.env.shell });
 
-        cproc.stdout.on('data', function (data) {
+        cproc.stdout.on('data', function(data) {
             output += data;
             if (options && options.printStdout && !options.mute) {
                 console.log(`stdout: ${data}`);
             }
         });
 
-        cproc.stderr.on('data', function (data) {
+        cproc.stderr.on('data', function(data) {
             if (options && options.surpressError) {
                 if (options && !options.mute) {
                     console.warn(`[surpressed] stderr: ${data}`);
@@ -47,7 +47,7 @@ const shellfishSpawn = (cmd, args = [], cwd = process.cwd(), options = {}) => {
             }
         });
 
-        cproc.on('close', function () {
+        cproc.on('close', function() {
             resolve(output);
         });
     });
@@ -219,7 +219,7 @@ class Shellfish {
         if (realPath.indexOf(process.cwd()) === 0) { des = realPath } else {
             des = path.resolve(await this.makeTempDir(), src);
         }
-        await shellfishSpawn('zip', ['-r', fileName, '.', '-x'].concat(excludeList), des);
+        await shellfishSpawn('zip', ['-r', fileName, '.', '-x'].concat(excludeList), des, options);
         return path.resolve(des, fileName);
     }
 
