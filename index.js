@@ -166,7 +166,10 @@ class Shellfish {
                 if (typeof search[index] !== 'string') {
                     break;
                 }
-                await this.findAndDelete(search[index], cwd, options);
+                let foundArray = await this.find(search[index], cwd);
+                for (let location of foundArray) {
+                    if (location) { await this.deleteSafe(location, cwd, options) }
+                }
                 if (++index === search.length) { return true }
             }
         }
@@ -192,6 +195,9 @@ class Shellfish {
             console.error('<src> and <des> must be provided.');
             return false;
         }
+        if (path.resolve(des).indexOf(path.resolve(src)) === 0) {
+            throw new Error(`\n\n( ͡° ͜ʖ ͡°) moving <${src}> to its subdir <${des}> creates a circular reference. I won't allow this happen.`);// eslint-disable-line max-len
+        }
         return await shellfishExec(`mv ${path.resolve(src)} ${path.resolve(des)}`,
             process.cwd(), options);
     }
@@ -207,19 +213,6 @@ class Shellfish {
         });
     }
 
-    async findAndDelete(search, onDir, options = {}) {
-        if (typeof search === 'string') {
-            search = [search];
-        }
-        if (!Array.isArray(search)) { return [] }
-        for (let srch of search) {
-            let foundArray = await this.find(srch, onDir);
-            for (let location of foundArray) {
-                if (location) { await this.deleteSafe(location, onDir, options) }
-            }
-        }
-    }
-
     async zipSafe(fileName, src, excludeList = [], options = {}) {
         let des, realPath = path.resolve(src);
         // allow to create zip file in cwd, otherwise, create in the temp dir
@@ -231,11 +224,12 @@ class Shellfish {
     }
 
 
-    async copyPlus(src, des, excludes = [], options = {}) {
+    async copyPlus(src, des, excludeList = [], options = {}) {
         // copy funcapp module to temp dir
-        await this.copy(src, des);
+        await this.copy(src, des, process.cwd(), options);
         // remove unnecessary files and directories
-        await this.remove(excludes, des);
+        await this.remove(excludeList, des, process.cwd(), options);
+        return true;
     }
 
     async npmInstallAt(location, args = [], options = {}) {
