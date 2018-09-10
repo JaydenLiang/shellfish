@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 'use strict';
 /*
  * Shellfish
@@ -6,10 +7,13 @@
  *
  * Author: Jayden Liang <jaydenliang81@gmail.com> (http://www.pjliang.com/)
  *
-*/
+ */
 
 exports = module.exports;
-const { exec, spawn } = require('child_process');
+const {
+    exec,
+    spawn
+} = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
@@ -19,7 +23,10 @@ const shellfishSpawn = (cmd, args = [], cwd = process.cwd(), options = {}) => {
         if (options && !options.mute) {
             console.log(`run command:${cmd} ${args.join(' ')} on dir: ${cwd}`);
         }
-        let cproc = spawn(cmd, args, { cwd: cwd, shell: process.env.shell });
+        let cproc = spawn(cmd, args, {
+            cwd: cwd,
+            shell: process.env.shell
+        });
 
         cproc.stdout.on('data', function(data) {
             output += data;
@@ -58,7 +65,9 @@ const shellfishExec = (cmd, cwd = process.cwd(), options = {}) => {
         if (options && !options.mute) {
             console.log(`run command:${cmd} on dir: ${cwd}`);
         }
-        exec(cmd, { cwd: cwd }, (error, stdout, stderr) => {
+        exec(cmd, {
+            cwd: cwd
+        }, (error, stdout, stderr) => {
             if (error) {
                 if (options && options.surpressError) {
                     if (options && !options.mute) {
@@ -121,8 +130,9 @@ class Shellfish {
 
     async checkOS() {
         try {
-            let osVersion = await shellfishExec('sw_vers -productName', process.cwd(),
-                { mute: true });
+            let osVersion = await shellfishExec('sw_vers -productName', process.cwd(), {
+                mute: true
+            });
             this._isMacOS = osVersion.trim().indexOf('Mac OS') !== -1;
             return true;
         } catch (error) {
@@ -140,7 +150,7 @@ class Shellfish {
             await this.checkOS();
         }
         if (path.resolve(des).indexOf(path.resolve(src)) === 0) {
-            throw new Error(`\n\n( ͡° ͜ʖ ͡°) copying <${src}> to its subdir <${des}> creates a circular reference. I won't allow this happen.`);// eslint-disable-line max-len
+            throw new Error(`\n\n( ͡° ͜ʖ ͡°) copying <${src}> to its subdir <${des}> creates a circular reference. I won't allow this happen.`); // eslint-disable-line max-len
         }
         return new Promise((resolve, reject) => {
             let cpArgs = this._isMacOS ? ' -RL' : ' -rL';
@@ -168,9 +178,13 @@ class Shellfish {
                 }
                 let foundArray = await this.find(search[index], cwd);
                 for (let location of foundArray) {
-                    if (location) { await this.deleteSafe(location, cwd, options) }
+                    if (location) {
+                        await this.deleteSafe(location, cwd, options);
+                    }
                 }
-                if (++index === search.length) { return true }
+                if (++index === search.length) {
+                    return true;
+                }
             }
         }
         console.error('( ͡° ͜ʖ ͡°) <search> only accepts string or string array when remove.');
@@ -183,7 +197,7 @@ class Shellfish {
         }
         let realPath = path.resolve(onDir, location);
         if (realPath.indexOf(onDir) !== 0 || realPath === onDir || realPath === '/') {
-            console.error(`\n\n( ͡° ͜ʖ ͡°) the locaton (${location}) falls outside directories allowed: ${onDir}, or in somewhere inappropriate to delete.`);// eslint-disable-line max-len
+            console.error(`\n\n( ͡° ͜ʖ ͡°) the locaton (${location}) falls outside directories allowed: ${onDir}, or in somewhere inappropriate to delete.`); // eslint-disable-line max-len
             console.error('( ͡° ͜ʖ ͡°) I don\'t allow you to delete it');
             return false;
         }
@@ -196,7 +210,7 @@ class Shellfish {
             return false;
         }
         if (path.resolve(des).indexOf(path.resolve(src)) === 0) {
-            throw new Error(`\n\n( ͡° ͜ʖ ͡°) moving <${src}> to its subdir <${des}> creates a circular reference. I won't allow this happen.`);// eslint-disable-line max-len
+            throw new Error(`\n\n( ͡° ͜ʖ ͡°) moving <${src}> to its subdir <${des}> creates a circular reference. I won't allow this happen.`); // eslint-disable-line max-len
         }
         return await shellfishExec(`mv ${path.resolve(src)} ${path.resolve(des)}`,
             process.cwd(), options);
@@ -204,7 +218,8 @@ class Shellfish {
 
     async find(search, onDir) {
         return await shellfishExec(`find . -name "${search}"`, onDir, {
-            printStdout: false, printStderr: false
+            printStdout: false,
+            printStderr: false
         }).then(output => {
             return output.split('\n').filter(line => line.trim());
         }).catch(error => {
@@ -214,12 +229,20 @@ class Shellfish {
     }
 
     async zipSafe(fileName, src, excludeList = [], options = {}) {
-        let des, realPath = path.resolve(src);
+        let des, args = [],
+            realPath = path.resolve(src);
         // allow to create zip file in cwd, otherwise, create in the temp dir
-        if (realPath.indexOf(process.cwd()) === 0) { des = realPath } else {
+        if (realPath.indexOf(process.cwd()) === 0) {
+            des = realPath;
+        } else {
             des = path.resolve(await this.makeTempDir(), src);
         }
-        await shellfishSpawn('zip', ['-r', fileName, '.', '-x'].concat(excludeList), des, options);
+        args = args.concat(['-r', fileName, '.']);
+        if (Array.isArray(excludeList) && excludeList.length > 0) {
+            args.push('-x');
+            args = args.concat(excludeList);
+        }
+        await shellfishSpawn('zip', args, des, options);
         return path.resolve(des, fileName);
     }
 
@@ -237,10 +260,15 @@ class Shellfish {
         if (packageInfo.name) {
             let pathInfo = path.parse(path.resolve(location)),
                 packPath = path.join(pathInfo.dir, pathInfo.ext ? '' : pathInfo.base);
-            Object.assign(options, { surpressError: true });
-            return await shellfishSpawn('npm', ['install'].concat(args), packPath,
-                { surpressError: true });
-        } else { return false }
+            Object.assign(options, {
+                surpressError: true
+            });
+            return await shellfishSpawn('npm', ['install'].concat(args), packPath, {
+                surpressError: true
+            });
+        } else {
+            return false;
+        }
     }
 
     async npmPruneAt(location, args = [], options = {}) {
@@ -248,18 +276,26 @@ class Shellfish {
         if (packageInfo.name) {
             let pathInfo = path.parse(path.resolve(location)),
                 packPath = path.join(pathInfo.dir, pathInfo.ext ? '' : pathInfo.base);
-            Object.assign(options, { surpressError: true });
-            return await shellfishSpawn('npm', ['prune'].concat(args), packPath,
-                { surpressError: true });
-        } else { return false }
+            Object.assign(options, {
+                surpressError: true
+            });
+            return await shellfishSpawn('npm', ['prune'].concat(args), packPath, {
+                surpressError: true
+            });
+        } else {
+            return false;
+        }
     }
 
     async npmPackAt(location, args = [], options = {}) {
         let pathInfo = path.parse(path.resolve(location)),
             packPath = path.join(pathInfo.dir, pathInfo.ext ? '' : pathInfo.base),
             packageInfo = this.readPackageJsonAt(packPath),
-            tarballPath = null, tarballExists = false;
-        Object.assign(options, { surpressError: true });
+            tarballPath = null,
+            tarballExists = false;
+        Object.assign(options, {
+            surpressError: true
+        });
         if (packageInfo.name) {
             await shellfishSpawn('npm', ['pack'].concat(args), packPath, options);
             tarballPath = path.resolve(packPath, `${packageInfo.name}-${packageInfo.version}.tgz`);
@@ -279,10 +315,14 @@ class Shellfish {
         if (packageInfo.name) {
             let pathInfo = path.parse(path.resolve(location)),
                 packPath = path.join(pathInfo.dir, pathInfo.ext ? '' : pathInfo.base);
-            Object.assign(options, { surpressError: true });
+            Object.assign(options, {
+                surpressError: true
+            });
             return await shellfishSpawn('npm', ['run'].concat(args), packPath,
                 options);
-        } else { return false }
+        } else {
+            return false;
+        }
     }
 
     readPackageJsonAt(location) {
@@ -294,14 +334,18 @@ class Shellfish {
                 return require(path.join(pathInfo.dir, 'package.json'));
             } else if (stat.isDirectory()) {
                 return require(path.join(pathInfo.dir, pathInfo.base, 'package.json'));
-            } else { return {} }
+            } else {
+                return {};
+            }
         } catch (error) {
             return {};
         }
     }
 
     spawn(num = 1) {
-        if (num === 1) { return new Shellfish() } else {
+        if (num === 1) {
+            return new Shellfish();
+        } else {
             let offsprings = [];
             while (num > 0) {
                 offsprings.push(new Shellfish());
