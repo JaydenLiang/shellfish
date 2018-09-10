@@ -1,5 +1,6 @@
 # Shellfish
-A Node.js project packaging tool for CI/CD practices. 
+A Node.js project packaging tool for CI/CD practices.
+ 
 :shell:: But, how can a shellfish live without a **shell**?
 
 ## Installation
