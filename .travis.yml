@@ -1,0 +1,14 @@
+language: node_js
+node_js: 8.11.1
+script: 
+before_deploy:
+- npm install
+deploy:
+  provider: npm
+  email: jaydenliang81@gmail.com
+  api_key:
+    secure: pxfqNoqEf/L+H98iA2T8mp7KubZYHpXjBx4o7bxZ/B3T/3pukvf3uixx488yL2agtxL4se+RJez/8/8yxPD/5ObZtjlYQFyfRa52vXRq2QcGVNUevFdf1H+ICPenOlaA6kuwj47SQSDA7wNf2nYEOMztc08zQt4pOyiWTosgGPvB55UryOpQJTfBN/9I/KnRN6Mx685AtIQDGBwoBw4xW97TvnU6M3VagzXt6xdjmNfxMv+OPKCn9kT3PAeMPj+2ygg9bR51S2NusNwW8r3DjhKPz2MX4f6wM9c9ffvsH3EV3g3WB2yHx5YrBP2FeMcon3+dKebGG+idzRvkFoOjsr2r72Ym+07fSLXUtOH79jMsEKOk2XdLH9ZT3qgp/CfMwh3azS0B0Tm0zM3S4OpFZyEEl3VXFSNBqR9hnxKa88Wl5X4l1hzWrr27pfBq+f9P202YdY0CF7mWYG3aXu+wcjvOeGu9Mmw9rfvZe44SIDdUYoh5wYj2uj5xtfibIMizQJ6EcwJKODGG01oXsJMlg4D+APm9N94jb7Nr1nbdjCHi0SKvUhCzcALlpB0EpxsfotGpjIx+F0atAPsHI+pH5b4BjGW/RuClsIt/v0AFsAWmRSNVJwJNk3Zpv2w7/rTPBCBS3BLFIdX+hT/i+KJnamvgIjvQQaF8JygFf9q94jY=
+  on:
+    tags: true
+    repo: jaydenliang/shellfish
+    branch: master

@@ -1,0 +1,34 @@
+{
+  "name": "shellfish",
+  "version": "1.0.0",
+  "description": "A Node.js project packaging tool for CI/CD practices.",
+  "main": "index.js",
+  "scripts": {
+    "pretest": "eslint --fix .",
+    "test": "nyc mocha --recursive './test/mocha/*.js'",
+    "build-test": "node scripts/build.js 'test'",
+    "build": "node scripts/build.js",
+    "deploy": "make_dist.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JaydenLiang/shellfish.git"
+  },
+  "keywords": [
+    "shell",
+    "nodejs",
+    "deployment"
+  ],
+  "author": "Jayden Liang <jaydenliang81@gmail.com> (http://www.pjliang.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JaydenLiang/shellfish/issues"
+  },
+  "homepage": "https://github.com/JaydenLiang/shellfish#readme",
+  "devDependencies": {
+    "eslint": "^5.5.0",
+    "mocha": "^5.2.0",
+    "nyc": "^13.0.1",
+    "sinon": "^6.2.0"
+  }
+}
