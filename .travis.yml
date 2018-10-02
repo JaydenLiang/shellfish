@@ -11,4 +11,4 @@ deploy:
   on:
     tags: true
     repo: JaydenLiang/shellfish
-    branch: develop
+    branch: master

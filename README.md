@@ -12,11 +12,18 @@ from [npm](https://github.com/npm/npm)
 ## Usage
 
 ``` js
-const sf = require('shellfish');
+const Shellfish = require('shellfish');
+var sf = new Shellfish();
+
+async function doSomething(){
+    await sf.npmInstallAt('./project', ['--save-dev', 'shellfish']});
+}
+
+var [sf1, sf2] = sf.spawn(2);
 ```
 
 ## API
-All APIs will be able to throw ```Error``` unless explicitly called with **surpressError** option set **true**. You are always encouraged to use ```try-catch``` statements to handle those Errors.
+All APIs will be able to throw ```Error``` unless explicitly called with **suppressError** option set **true**. You are always encouraged to use ```try-catch``` statements to handle those Errors.
 #### Asynchronous
 ### makeTempDir(options = {})
 > Make a temp directory.
@@ -149,7 +156,7 @@ The location to run npm install. Can be a real path or relative path. If a relat
 - **args**: type of `String Array`
 The arguments to apply to npm install.
 - **options**: type of `Object`
-***surpressError*** is always set to ***true***.
+***suppressError*** is always set to ***true***.
 See available options on [options](#options-1) section.
 
 ***Return***: *false* if package.json not found on <location>. Otherwise, the output to the *stdout* during running npm install. If not output on *stdout*, output to the *stderr* if error occurred.
@@ -162,7 +169,7 @@ The location to run npm prune. Can be a real path or relative path. If a relativ
 - **args**: type of `String Array`
 The arguments to apply to npm prune.
 - **options**: type of `Object`
-***surpressError*** is always set to ***true***.
+***suppressError*** is always set to ***true***.
 See available options on [options](#options-1) section.
 
 ***Return***: *false* if package.json not found on <location>. Otherwise, the output to the *stdout* during running npm prune. If not output on *stdout*, output to the *stderr* if error occurred.
@@ -176,7 +183,7 @@ The location to run npm pack. Can be a real path or relative path. If a relative
 - **args**: type of `String Array`
 The arguments to apply to npm pack.
 - **options**: type of `Object`
-***surpressError*** is always set to ***true***.
+***suppressError*** is always set to ***true***.
 If ***checkSucess*** is set to ***true***, an ```Error``` will be thrown when unable to pack a node module at the given location.
 See other available options on [options](#options-1) section.
 
@@ -192,7 +199,7 @@ The location to execute npm run. Can be a real path or relative path. If a relat
 - **args**: type of `String Array`
 The arguments to apply to npm num. The first argument in this array will be taken as the script name specified in the ***scripts*** object in the ***package.json*** file on <location>.
 - **options**: type of `Object`
-***surpressError*** is always set to ***true***.
+***suppressError*** is always set to ***true***.
 See other available options on [options](#options-1) section.
 
 ***Return***: The path to the package tarball file (with ***.tgz*** extension) if sucessfully pack the node module, or ***null***.
@@ -214,12 +221,12 @@ Yes, Shellfish can spawn.
 - **num**: type of `Integer`
 The number of Shellfish instances to screate.
 
-***Return***: One ```Shellfish``` instance of an array of ```Shellfish``` instances of the given number.
+***Return***: One ```Shellfish``` instance or an array of ```Shellfish``` instances of the given number.
 
 ## Options
-> Some options are only effective in a curtain API. Also, an option could be automatically set to true in a certain API but could never be changed.
-#### surpressError
-Surpress all ```Error``` which would be thrown. Error logs are still displayed.
+> Some options are only effective in a certain API. Also, an option could be automatically set to true in a certain API but could never be changed.
+#### suppressError
+suppress all ```Error``` which would be thrown. Error logs are still displayed.
 - type of `boolean` default to ***false***.
 #### mute
 Do not display any log to console.

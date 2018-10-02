@@ -28,17 +28,17 @@ const shellfishSpawn = (cmd, args = [], cwd = process.cwd(), options = {}) => {
             shell: process.env.shell
         });
 
-        cproc.stdout.on('data', function(data) {
+        cproc.stdout.on('data', function (data) {
             output += data;
             if (options && options.printStdout && !options.mute) {
                 console.log(`stdout: ${data}`);
             }
         });
 
-        cproc.stderr.on('data', function(data) {
-            if (options && options.surpressError) {
+        cproc.stderr.on('data', function (data) {
+            if (options && options.suppressError) {
                 if (options && !options.mute) {
-                    console.warn(`[surpressed] stderr: ${data}`);
+                    console.warn(`[suppressed] stderr: ${data}`);
                 }
                 resolve('');
             } else {
@@ -47,14 +47,14 @@ const shellfishSpawn = (cmd, args = [], cwd = process.cwd(), options = {}) => {
         });
 
         cproc.on('error', err => {
-            if (options && options.surpressError) {
-                console.warn(`[surpressed] error: ${err}`);
+            if (options && options.suppressError) {
+                console.warn(`[suppressed] error: ${err}`);
             } else {
                 reject(err.toString());
             }
         });
 
-        cproc.on('close', function() {
+        cproc.on('close', function () {
             resolve(output);
         });
     });
@@ -69,9 +69,9 @@ const shellfishExec = (cmd, cwd = process.cwd(), options = {}) => {
             cwd: cwd
         }, (error, stdout, stderr) => {
             if (error) {
-                if (options && options.surpressError) {
+                if (options && options.suppressError) {
                     if (options && !options.mute) {
-                        console.error(`[surpressed] error: ${error}`);
+                        console.error(`[suppressed] error: ${error}`);
                     }
                     resolve('');
                 } else {
@@ -261,14 +261,15 @@ class Shellfish {
             let pathInfo = path.parse(path.resolve(location)),
                 packPath = path.join(pathInfo.dir, pathInfo.ext ? '' : pathInfo.base);
             Object.assign(options, {
-                surpressError: true
+                suppressError: true
             });
             return await shellfishSpawn('npm', ['install'].concat(args), packPath, {
-                surpressError: true
+                suppressError: true
             });
         } else {
             return false;
         }
+
     }
 
     async npmPruneAt(location, args = [], options = {}) {
@@ -277,10 +278,10 @@ class Shellfish {
             let pathInfo = path.parse(path.resolve(location)),
                 packPath = path.join(pathInfo.dir, pathInfo.ext ? '' : pathInfo.base);
             Object.assign(options, {
-                surpressError: true
+                suppressError: true
             });
             return await shellfishSpawn('npm', ['prune'].concat(args), packPath, {
-                surpressError: true
+                suppressError: true
             });
         } else {
             return false;
@@ -294,7 +295,7 @@ class Shellfish {
             tarballPath = null,
             tarballExists = false;
         Object.assign(options, {
-            surpressError: true
+            suppressError: true
         });
         if (packageInfo.name) {
             await shellfishSpawn('npm', ['pack'].concat(args), packPath, options);
@@ -316,7 +317,7 @@ class Shellfish {
             let pathInfo = path.parse(path.resolve(location)),
                 packPath = path.join(pathInfo.dir, pathInfo.ext ? '' : pathInfo.base);
             Object.assign(options, {
-                surpressError: true
+                suppressError: true
             });
             return await shellfishSpawn('npm', ['run'].concat(args), packPath,
                 options);
